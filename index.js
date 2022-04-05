@@ -12,7 +12,9 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 const chocolateRoutes = require("./routes/chocolates");
+const homepageRoutes = require("./routes/home");
 
+app.use("/", homepageRoutes);
 app.use("/chocolates", chocolateRoutes);
 
 app.listen(3000);
