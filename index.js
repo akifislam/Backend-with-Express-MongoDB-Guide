@@ -2,19 +2,16 @@
 // Step 1.2 : Install Express for Less Messy Code : npm install express
 // Step 1.3 : write ",start" : "nodemon index.js" at package.json
 // Step 3.1 : Install body-parser to read data from Postman | npm install body-parser
+// Step 9.1 : Simply, Start MongoDB Server on your PC (maybe using GitBash)
+// Step 9.2 : Install mongoose by typing ' npm install mongoose '
 
-var chocolates = ["Snekers", "Kitkat", "Dairy Milk Silk"];
-
+const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-
-const chocolateRoutes = require("./routes/chocolates");
-const homepageRoutes = require("./routes/home");
-
-app.use("/", homepageRoutes);
-app.use("/chocolates", chocolateRoutes);
+//MongoDB Connection
+mongoose.connect("mongodb://localhost:27017/chocolates").then(() => {
+  console.log("Database Connected Successfully");
+});
 
 app.listen(3000);
