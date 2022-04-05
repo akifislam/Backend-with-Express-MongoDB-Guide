@@ -11,17 +11,19 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 
-// For localhost:3000/ will send all chocolates list
 app.get("/", (req, res) => {
   res.send(chocolates);
 });
 
-// For localhost:3000/2 will send Kitkat
-// For localhost:3000/3 will send Dairy Milk Silk
-
 app.get("/:chocolateID", (req, res) => {
   const index = req.params.chocolateID;
   res.send(chocolates[index]);
+});
+
+app.post("/", (req, res) => {
+  chocolates.push(req.body.name);
+  console.log("New Chocolate Added : " + req.body.name);
+  res.send("New Chocolate Added : " + req.body.name);
 });
 
 app.listen(3000);
