@@ -5,52 +5,26 @@
 // Step 9.1 : Simply, Start MongoDB Server on your PC (maybe using GitBash)
 // Step 9.2 : Install mongoose by typing ' npm install mongoose '
 
-// What's New ? : Here we will learn to GET, POST, DELETE, PUT with MongoDB
+// Step 12.1 : Install morgan (optional) to see the log of  GET/POST/PUT/DELETE requests in terminal
+// Type 'npm install morgan'
+
+// What's New ? : Solving Assignment 1
 
 const express = require("express");
-const mongoose = require("mongoose");
-const Book = require("./models/bookScheme");
-const bodyparser = require("body-parser");
-
 const app = express();
+
+const bodyparser = require("body-parser");
 app.use(bodyparser.json());
 
-//MongoDB Connection
-mongoose.connect("mongodb://localhost:27017/AkifBookShop").then(() => {
-  console.log("Database Connected Successfully");
+const dishRouter = require("./routes/dishRouter");
+const leaderRouter = require("./routes/leaderRouter");
+const promoRouter = require("./routes/promoRouter");
 
-  app.get("/", async (req, res) => {
-    const books = await Book.find();
-    res.send(books);
-  });
+app.use("/dishes", dishRouter);
+app.use("/leaders", leaderRouter);
+app.use("/promotions", promoRouter);
 
-  app.get("/:id", async (req, res) => {
-    const books = await Book.findById(req.params.id);
-    res.send(books);
-  });
-
-  app.post("/", async (req, res) => {
-    //Adding a new book to database
-    const book = new Book(req.body);
-    await book.save();
-    res.send("New book added to Database : " + book);
-  });
-
-  // To delete all documents in a collection, pass an empty document ( {} )
-  app.delete("/", async (req, res) => {
-    await Book.remove({});
-    res.send("Database Deleted Successfully");
-  });
-
-  app.delete("/:id", async (req, res) => {
-    await Book.findByIdAndRemove(req.params.id);
-    res.send("Book Deleted");
-  });
-
-  app.put("/:id", async (req, res) => {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body);
-    res.send("Book Updated : " + book);
-  });
-
-  app.listen(3000);
+app.use("/", (req, res) => {
+  res.send("Welcome to my Restaurant");
 });
+app.listen(3000);
