@@ -1,37 +1,39 @@
 const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
 const router = express.Router();
+app.use(bodyParser.json());
 
-leaders = ["Akif", "Sagor", "Eram", "Farjana", "Adrita", "Sami", "Chaity"];
+const Leaders = require("../models/leadersSchema");
 
-router.get("/", (req, res) => {
-  res.send(leaders);
+router.get("/", async (req, res) => {
+  const leaderslist = await Leaders.find();
+  res.send(leaderslist);
 });
 
-router.get("/:leaderID", (req, res) => {
-  const index = req.params.leaderID;
-  res.send(leaders[index]);
+router.get("/:leaderID", async (req, res) => {
+  const leader = await Leaders.findById(req.params.leaderID);
+  res.send(leader);
 });
 
-router.post("/", (req, res) => {
-  const new_leader = req.body.name;
-  leaders.push(new_leader);
+router.post("/", async (req, res) => {
+  const new_leader = new Leaders(req.body);
+  await new_leader.save();
   res.send("Added new leader :" + new_leader);
 });
 
-router.put("/:leaderID", (req, res) => {
-  const index = req.params.leaderID;
-  leaders[index] = req.body.name;
-  res.send("Updated leader of index : " + index);
+router.put("/:leaderID", async (req, res) => {
+  await Leaders.findByIdAndUpdate(req.params.leaderID, req.body);
+  res.send("Updated leader of ID : " + req.params.leaderID);
 });
 
-router.delete("/", (req, res) => {
-  leaders = [];
-  res.send("Deleted all leaders :( ");
+router.delete("/", async (req, res) => {
+  await Leaders.remove({});
+  res.send("Deleted all Leaders :( ");
 });
 
-router.delete("/:leaderID", (req, res) => {
-  const index = req.params.leaderID;
-  leaders.splice(index, 1);
+router.delete("/:leaderID", async (req, res) => {
+  await Leaders.findByIdAndDelete(req.params.leaderID);
   res.send("Deleted leader of index : " + index);
 });
 

@@ -1,38 +1,40 @@
 const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
 const router = express.Router();
+app.use(bodyParser.json());
 
-promos = ["1% Discout", "5% Discount", "Buy 4 Get 1", "20% Cashback on Bkash"];
+const Promotions = require("../models/promotionsSchema");
 
-router.get("/", (req, res) => {
-  res.send(promos);
+router.get("/", async (req, res) => {
+  const Promotionslist = await Promotions.find();
+  res.send(Promotionslist);
 });
 
-router.get("/:promoID", (req, res) => {
-  const index = req.params.promoID;
-  res.send(promos[index]);
+router.get("/:promotionID", async (req, res) => {
+  const promotion = await Promotions.findById(req.params.promotionID);
+  res.send(promotion);
 });
 
-router.post("/", (req, res) => {
-  const new_promo = req.body.name;
-  promos.push(new_promo);
-  res.send("Added new promotions :" + new_promo);
+router.post("/", async (req, res) => {
+  const new_promotion = new Promotions(req.body);
+  await new_promotion.save();
+  res.send("Added new promotion :" + new_promotion);
 });
 
-router.put("/:promoID", (req, res) => {
-  const index = req.params.promoID;
-  promos[index] = req.body.name;
-  res.send("Updated promotions of index : " + index);
+router.put("/:promotionID", async (req, res) => {
+  await Promotions.findByIdAndUpdate(req.params.promotionID, req.body);
+  res.send("Updated promotion of ID : " + req.params.promotionID);
 });
 
-router.delete("/", (req, res) => {
-  promos = [];
-  res.send("Deleted all promos :( ");
+router.delete("/", async (req, res) => {
+  await Promotions.remove({});
+  res.send("Deleted all Promotions :( ");
 });
 
-router.delete("/:promoID", (req, res) => {
-  const index = req.params.promoID;
-  promos.splice(index, 1);
-  res.send("Deleted promotions of index : " + index);
+router.delete("/:promotionID", async (req, res) => {
+  await Promotions.findByIdAndDelete(req.params.promotionID);
+  res.send("Deleted promotion of index : " + index);
 });
 
 module.exports = router;

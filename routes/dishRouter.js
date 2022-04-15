@@ -1,37 +1,39 @@
 const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
 const router = express.Router();
+app.use(bodyParser.json());
 
-dishes = ["Bhaat", "Potol", "Dhreosh", "Misty Kumra", "Begun"];
+const Dishes = require("../models/dishesSchema");
 
-router.get("/", (req, res) => {
-  res.send(dishes);
+router.get("/", async (req, res) => {
+  const disheslist = await Dishes.find();
+  res.send(disheslist);
 });
 
-router.get("/:dishID", (req, res) => {
-  const index = req.params.dishID;
-  res.send(dishes[index]);
+router.get("/:dishID", async (req, res) => {
+  const dish = await Dishes.findById(req.params.dishID);
+  res.send(dish);
 });
 
-router.post("/", (req, res) => {
-  const new_dish = req.body.name;
-  dishes.push(new_dish);
+router.post("/", async (req, res) => {
+  const new_dish = new Dishes(req.body);
+  await new_dish.save();
   res.send("Added new dish :" + new_dish);
 });
 
-router.put("/:dishID", (req, res) => {
-  const index = req.params.dishID;
-  dishes[index] = req.body.name;
-  res.send("Updated dish of index : " + index);
+router.put("/:dishID", async (req, res) => {
+  await Dishes.findByIdAndUpdate(req.params.dishID, req.body);
+  res.send("Updated dish of ID : " + req.params.dishID);
 });
 
-router.delete("/", (req, res) => {
-  dishes = [];
+router.delete("/", async (req, res) => {
+  await Dishes.remove({});
   res.send("Deleted all dishes :( ");
 });
 
-router.delete("/:dishID", (req, res) => {
-  const index = req.params.dishID;
-  dishes.splice(index, 1);
+router.delete("/:dishID", async (req, res) => {
+  await Dishes.findByIdAndDelete(req.params.dishID);
   res.send("Deleted dish of index : " + index);
 });
 
